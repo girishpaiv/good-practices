@@ -1,0 +1,20 @@
+name: Validate Commit messages in PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+jobs:
+  validate-pr-commits:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./.github/workflows/helpers
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PR_VALIDATION_SECRET }}
+          fetch-depth: 0
+      - name: Validate commit messages
+        run: /bin/bash ./validate_commits.sh ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
